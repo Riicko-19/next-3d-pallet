@@ -2,7 +2,7 @@
 
 import { useRef, useMemo, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Environment, SpotLight } from '@react-three/drei';
+import { Environment, SpotLight, useTexture, ContactShadows, Html } from '@react-three/drei';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -10,15 +10,52 @@ import * as THREE from 'three';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// --- LABEL COMPONENT ---
+function Label({ text, position }: { text: string; position: [number, number, number] }) {
+    const labelRef = useRef<HTMLDivElement>(null);
+
+    useGSAP(() => {
+        if (!labelRef.current) return;
+
+        // Fade in labels only when scroll reaches 90%+
+        gsap.fromTo(
+            labelRef.current,
+            { opacity: 0 },
+            {
+                opacity: 1,
+                scrollTrigger: {
+                    trigger: '#pallet-container',
+                    start: '90% bottom',
+                    end: '100% bottom',
+                    scrub: 1,
+                },
+            }
+        );
+    }, []);
+
+    return (
+        <Html position={position} center transform>
+            <div
+                ref={labelRef}
+                className="text-white text-sm font-bold bg-black/80 px-2 py-1 rounded border border-white/20 whitespace-nowrap"
+                style={{ opacity: 0 }}
+            >
+                {text}
+            </div>
+        </Html>
+    );
+}
+
 // --- PLANK COMPONENT ---
 interface PlankProps {
     startPos: [number, number, number];
     targetPos: [number, number, number];
     size: [number, number, number];
     id: number;
+    texture: THREE.Texture;
 }
 
-function Plank({ startPos, targetPos, size, id }: PlankProps) {
+function Plank({ startPos, targetPos, size, id, texture }: PlankProps) {
     const meshRef = useRef<THREE.Mesh>(null);
 
     useGSAP(() => {
@@ -45,14 +82,21 @@ function Plank({ startPos, targetPos, size, id }: PlankProps) {
     return (
         <mesh ref={meshRef} castShadow receiveShadow>
             <boxGeometry args={size} />
-            {/* Bright Orange for Visibility */}
-            <meshStandardMaterial color="#fb923c" roughness={0.5} />
+            {/* Realistic wood texture */}
+            <meshStandardMaterial
+                map={texture}
+                roughness={0.8}
+                envMapIntensity={1}
+            />
         </mesh>
     );
 }
 
 // --- SCENE COMPONENT ---
 function Scene() {
+    // Load the wood texture
+    const texture = useTexture('https://threejs.org/examples/textures/hardwood2_diffuse.jpg');
+
     const planks = useMemo(() => {
         const random = (min: number, max: number) => Math.random() * (max - min) + min;
         return [
@@ -73,21 +117,33 @@ function Scene() {
             { id: 11, size: [3, 0.2, 0.4], targetPos: [0, -0.4, 1] },
         ].map((plank: any) => ({
             ...plank,
-            // VISIBILITY FIX: Start positions are lowered to y=2 to y=6
-            // They will float right in the middle of the screen
+            // Start positions lowered to eye level (y=2 to y=6) for immediate visibility
             startPos: [random(-3, 3), random(2, 6), random(-3, 3)],
         }));
     }, []);
 
     return (
         <>
+            {/* Switched back to 'city' for better contrast */}
             <Environment preset="city" />
-            <ambientLight intensity={1.5} />
-            <SpotLight position={[10, 10, 10]} angle={0.5} intensity={2} castShadow />
+
+            {/* LOWERED LIGHTING: Ambient down from 1.5 to 0.4 for darker shadows */}
+            <ambientLight intensity={0.4} />
+
+            {/* LOWERED LIGHTING: SpotLight down from 3 to 1.5 for less harsh highlights */}
+            <SpotLight position={[10, 15, 10]} angle={0.3} penumbra={1} intensity={1.5} castShadow />
+
+            {/* Soft Shadow on the floor */}
+            <ContactShadows position={[0, -2, 0]} opacity={0.6} scale={10} blur={2.5} far={4} />
 
             {planks.map((plank: any) => (
-                <Plank key={plank.id} {...plank} />
+                <Plank key={plank.id} {...plank} texture={texture} />
             ))}
+
+            {/* Floating Labels - Fade in at 90%+ scroll */}
+            <Label text="Top Deck" position={[0, 1, 0]} />
+            <Label text="Stringers" position={[1.5, 0, 0]} />
+            <Label text="Bottom Deck" position={[0, -0.8, 0]} />
         </>
     );
 }
@@ -96,7 +152,7 @@ function Scene() {
 export default function PalletAssembly() {
     return (
         <div id="pallet-container" className="h-[300vh] relative">
-            
+
             {/* 🛡️ THE SAFETY CURTAIN: This forces the background to be black forever. 
                 It is fixed to the screen behind the canvas. */}
             <div className="fixed inset-0 bg-zinc-900 -z-50" />
