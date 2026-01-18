@@ -23,7 +23,8 @@ function Log({ position, index, isHero }: { position: [number, number, number], 
             const tl = gsap.timeline({ scrollTrigger: { trigger: '#pallet-container', start: '0% top', end: '15% top', scrub: 1 } });
             tl.to(logRef.current.position, { x: 0, y: 2, z: 0, ease: 'power2.inOut' })
                 .to(logRef.current.rotation, { z: 0, ease: 'power2.inOut' }, "<");
-            gsap.to(logRef.current.scale, { x: 0.001, y: 0.001, z: 0.001, scrollTrigger: { trigger: '#pallet-container', start: '15% top', end: '20% top', scrub: 1 } });
+            // Keep log visible during hacksaw cutting, fade at 23-27%
+            gsap.to(logRef.current.scale, { x: 0.001, y: 0.001, z: 0.001, scrollTrigger: { trigger: '#pallet-container', start: '23% top', end: '27% top', scrub: 1 } });
         } else {
             gsap.to(logRef.current.scale, { x: 0, y: 0, z: 0, scrollTrigger: { trigger: '#pallet-container', start: '0% top', end: '10% top', scrub: 1 } });
         }
@@ -51,15 +52,15 @@ function Plank({ clusterIndex, targetPos, targetRotation, size, texture }: any) 
         meshRef.current.rotation.set(0, 0, Math.PI / 2);
         meshRef.current.scale.set(0, 0, 0);
 
-        // Transition pause: logs end at 20%, planks start at 30% (10% breathing room)
-        const appearTl = gsap.timeline({ scrollTrigger: { trigger: '#pallet-container', start: '30% top', end: '40% top', scrub: 3 } });
+        // Planks appear after hacksaw cutting (27%)
+        const appearTl = gsap.timeline({ scrollTrigger: { trigger: '#pallet-container', start: '27% top', end: '37% top', scrub: 3 } });
         appearTl.to(meshRef.current.scale, { x: 1, y: 1, z: 1, duration: 0.2 })
             .to(meshRef.current.position, { z: (Math.random() - 0.5) * 0.1, ease: "elastic.out(1, 0.3)" }, 0);
 
-        gsap.to(meshRef.current.position, { y: -0.5, scrollTrigger: { trigger: '#pallet-container', start: '40% top', end: '50% top', scrub: 3 }, ease: "bounce.out" });
+        gsap.to(meshRef.current.position, { y: -0.5, scrollTrigger: { trigger: '#pallet-container', start: '37% top', end: '47% top', scrub: 3 }, ease: "bounce.out" });
 
         // Assembly ends at 75%
-        const flyTl = gsap.timeline({ scrollTrigger: { trigger: '#pallet-container', start: '50% top', end: '75% top', scrub: 3 } });
+        const flyTl = gsap.timeline({ scrollTrigger: { trigger: '#pallet-container', start: '47% top', end: '75% top', scrub: 3 } });
         flyTl.to(meshRef.current.position, { x: targetPos[0], y: targetPos[1], z: targetPos[2], ease: "power2.inOut" }, 0)
             .to(meshRef.current.rotation, { x: targetRotation[0], y: targetRotation[1], z: targetRotation[2], ease: "power2.inOut" }, 0);
     }, [clusterIndex, targetPos, targetRotation]);
@@ -68,6 +69,73 @@ function Plank({ clusterIndex, targetPos, targetRotation, size, texture }: any) 
             <boxGeometry args={size} />
             <meshStandardMaterial map={texture} roughness={0.6} />
         </mesh>
+    );
+}
+
+// --- HACKSAW (Cuts the hero log into planks) ---
+function Hacksaw() {
+    const groupRef = useRef<THREE.Group>(null);
+
+    useGSAP(() => {
+        if (!groupRef.current) return;
+
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: '#pallet-container',
+                start: '15% top',
+                end: '27% top',
+                scrub: 1
+            }
+        });
+
+        // POP IN above log
+        tl.to(groupRef.current.scale, { x: 1, y: 1, z: 1, duration: 0.05, ease: "power2.inOut" })
+            .to(groupRef.current.position, { y: 2.5, duration: 0.1 });
+
+        // CUTTING MOTION (20-25%) - back and forth sawing
+        for (let i = 0; i < 6; i++) {
+            tl.to(groupRef.current.position, { x: 0.3, duration: 0.08, ease: "power1.inOut" })
+                .to(groupRef.current.rotation, { z: -0.1, duration: 0.08, ease: "power1.inOut" }, "<")
+                .to(groupRef.current.position, { x: -0.3, duration: 0.08, ease: "power1.inOut" })
+                .to(groupRef.current.rotation, { z: 0.1, duration: 0.08, ease: "power1.inOut" }, "<");
+        }
+
+        // Return to center and POP OUT
+        tl.to(groupRef.current.position, { x: 0, duration: 0.05 })
+            .to(groupRef.current.rotation, { z: 0, duration: 0.05 }, "<")
+            .to(groupRef.current.scale, { x: 0, y: 0, z: 0, duration: 0.1, ease: "power2.inOut" });
+    }, []);
+
+    // JSX Safety Net - NO GHOSTS
+    return (
+        <group ref={groupRef} position={[0, 3, 0]} scale={[0, 0, 0]}>
+            {/* Blade */}
+            <mesh position={[0, 0, 0]} rotation={[0, 0, 0]}>
+                <boxGeometry args={[1.5, 0.02, 0.15]} />
+                <meshStandardMaterial color="#c0c0c0" metalness={0.9} roughness={0.2} />
+            </mesh>
+            {/* Saw teeth (visual detail) */}
+            {[...Array(15)].map((_, i) => (
+                <mesh key={i} position={[-0.7 + (i * 0.1), -0.02, 0]}>
+                    <boxGeometry args={[0.02, 0.03, 0.15]} />
+                    <meshStandardMaterial color="#a0a0a0" metalness={0.8} roughness={0.3} />
+                </mesh>
+            ))}
+            {/* Handle */}
+            <mesh position={[0.8, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+                <cylinderGeometry args={[0.05, 0.05, 0.3, 16]} />
+                <meshStandardMaterial color="#8B4513" roughness={0.7} />
+            </mesh>
+            {/* Frame connecting blade to handle */}
+            <mesh position={[0.75, 0.15, 0]}>
+                <cylinderGeometry args={[0.015, 0.015, 0.3, 8]} />
+                <meshStandardMaterial color="#606060" metalness={0.7} roughness={0.4} />
+            </mesh>
+            <mesh position={[0.75, -0.15, 0]}>
+                <cylinderGeometry args={[0.015, 0.015, 0.3, 8]} />
+                <meshStandardMaterial color="#606060" metalness={0.7} roughness={0.4} />
+            </mesh>
+        </group>
     );
 }
 
@@ -306,6 +374,7 @@ function Scene({ setCompleted }: { setCompleted: (v: boolean) => void }) {
 
             {logs.map((l, i) => <Log key={i} position={l.pos as any} index={i} isHero={l.isHero} />)}
             {planks.map((p) => <Plank key={p.id} {...p} texture={texture} />)}
+            <Hacksaw />
 
             {topNailPositions.map((pos, i) => <TopNail key={`top-${i}`} position={pos} index={i} />)}
             {bottomNailPositions.map((pos, i) => <BottomNail key={`bot-${i}`} position={pos} index={i} />)}
