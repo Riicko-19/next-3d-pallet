@@ -88,29 +88,38 @@ function Hacksaw() {
             }
         });
 
-        // POP IN above log
+        // POP IN above log (not inside it)
         tl.to(groupRef.current.scale, { x: 1, y: 1, z: 1, duration: 0.05, ease: "power2.inOut" })
-            .to(groupRef.current.position, { y: 2.5, duration: 0.1 });
+            .to(groupRef.current.position, { y: 2.6, duration: 0.1 });
 
-        // CUTTING MOTION (20-25%) - back and forth sawing
-        for (let i = 0; i < 6; i++) {
-            tl.to(groupRef.current.position, { x: 0.3, duration: 0.08, ease: "power1.inOut" })
-                .to(groupRef.current.rotation, { z: -0.1, duration: 0.08, ease: "power1.inOut" }, "<")
-                .to(groupRef.current.position, { x: -0.3, duration: 0.08, ease: "power1.inOut" })
-                .to(groupRef.current.rotation, { z: 0.1, duration: 0.08, ease: "power1.inOut" }, "<");
+        // VERTICAL CUTTING MOTION with back-and-forth sawing (20-25%)
+        // Saw moves DOWN while also moving back and forth for realistic cutting
+        for (let i = 0; i < 5; i++) {
+            tl.to(groupRef.current.position, {
+                y: 2.6 - ((i + 1) * 0.24), // Move down incrementally
+                z: 0.15, // Forward
+                duration: 0.05,
+                ease: "power1.inOut"
+            })
+                .to(groupRef.current.position, {
+                    z: -0.15, // Backward
+                    duration: 0.05,
+                    ease: "power1.inOut"
+                });
         }
 
-        // Return to center and POP OUT
-        tl.to(groupRef.current.position, { x: 0, duration: 0.05 })
-            .to(groupRef.current.rotation, { z: 0, duration: 0.05 }, "<")
-            .to(groupRef.current.scale, { x: 0, y: 0, z: 0, duration: 0.1, ease: "power2.inOut" });
+        // Final cut to bottom and return to center
+        tl.to(groupRef.current.position, { y: 1.4, z: 0, duration: 0.05 });
+
+        // POP OUT after cutting
+        tl.to(groupRef.current.scale, { x: 0, y: 0, z: 0, duration: 0.1, ease: "power2.inOut" });
     }, []);
 
     // JSX Safety Net - NO GHOSTS
     return (
         <group ref={groupRef} position={[0, 3, 0]} scale={[0, 0, 0]}>
-            {/* Blade */}
-            <mesh position={[0, 0, 0]} rotation={[0, 0, 0]}>
+            {/* Blade - horizontal with teeth facing down */}
+            <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
                 <boxGeometry args={[1.5, 0.02, 0.15]} />
                 <meshStandardMaterial color="#c0c0c0" metalness={0.9} roughness={0.2} />
             </mesh>
@@ -136,6 +145,45 @@ function Hacksaw() {
                 <meshStandardMaterial color="#606060" metalness={0.7} roughness={0.4} />
             </mesh>
         </group>
+    );
+}
+
+// --- CUT LINE (Visible cut on log as hacksaw saws down) ---
+function CutLine() {
+    const meshRef = useRef<THREE.Mesh>(null);
+
+    useGSAP(() => {
+        if (!meshRef.current) return;
+
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: '#pallet-container',
+                start: '18% top',
+                end: '25% top',
+                scrub: 1
+            }
+        });
+
+        // Cut line grows from top to bottom as saw moves down
+        tl.to(meshRef.current.scale, { y: 1, duration: 1, ease: "power1.inOut" });
+
+        // Fade out cut line with the log (25-27%)
+        gsap.to(meshRef.current.scale, {
+            x: 0, y: 0, z: 0,
+            scrollTrigger: {
+                trigger: '#pallet-container',
+                start: '25% top',
+                end: '27% top',
+                scrub: 1
+            }
+        });
+    }, []);
+
+    return (
+        <mesh ref={meshRef} position={[0, 2, 0]} rotation={[0, Math.PI / 2, 0]} scale={[1, 0, 1]}>
+            <boxGeometry args={[0.6, 0.6, 0.01]} />
+            <meshStandardMaterial color="#1a1a1a" />
+        </mesh>
     );
 }
 
@@ -375,6 +423,7 @@ function Scene({ setCompleted }: { setCompleted: (v: boolean) => void }) {
             {logs.map((l, i) => <Log key={i} position={l.pos as any} index={i} isHero={l.isHero} />)}
             {planks.map((p) => <Plank key={p.id} {...p} texture={texture} />)}
             <Hacksaw />
+            <CutLine />
 
             {topNailPositions.map((pos, i) => <TopNail key={`top-${i}`} position={pos} index={i} />)}
             {bottomNailPositions.map((pos, i) => <BottomNail key={`bot-${i}`} position={pos} index={i} />)}
