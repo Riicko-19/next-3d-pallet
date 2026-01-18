@@ -32,11 +32,11 @@ function Log({ position, index, isHero }: { position: [number, number, number], 
     return (
         <group ref={logRef}>
             <mesh castShadow receiveShadow>
-                <cylinderGeometry args={[0.3, 0.3, 2.5, 32]} />
+                <cylinderGeometry args={[0.3, 0.3, 5.0, 32]} />
                 <meshStandardMaterial color="#E3CAA5" roughness={0.6} />
             </mesh>
-            <mesh position={[0, 1.255, 0]} rotation={[Math.PI / 2, 0, 0]}> <circleGeometry args={[0.3, 32]} /> <meshStandardMaterial color="#8D6E63" /> </mesh>
-            <mesh position={[0, -1.255, 0]} rotation={[-Math.PI / 2, 0, 0]}> <circleGeometry args={[0.3, 32]} /> <meshStandardMaterial color="#8D6E63" /> </mesh>
+            <mesh position={[0, 2.51, 0]} rotation={[Math.PI / 2, 0, 0]}> <circleGeometry args={[0.3, 32]} /> <meshStandardMaterial color="#8D6E63" /> </mesh>
+            <mesh position={[0, -2.51, 0]} rotation={[-Math.PI / 2, 0, 0]}> <circleGeometry args={[0.3, 32]} /> <meshStandardMaterial color="#8D6E63" /> </mesh>
         </group>
     );
 }
@@ -230,16 +230,72 @@ function Hammer({ nails }: { nails: [number, number, number][] }) {
     return (
         <group ref={groupRef} position={[0, 1.5, 0]} scale={[0, 0, 0]}>
             <group rotation={[0, 0, 0]}>
-                {/* Handle - Reduced to 1/4 original size */}
-                <mesh position={[0, 0.625, 0]}>
-                    <cylinderGeometry args={[0.07, 0.07, 1.25, 16]} />
-                    <meshStandardMaterial color="#8B4513" roughness={0.7} />
+                {/* MESH A: Grip - Black Rubber (Bottom 40% of handle) */}
+                <mesh position={[0, -0.24, 0]}>
+                    <cylinderGeometry args={[0.045, 0.05, 0.48, 20]} />
+                    <meshStandardMaterial color="#222222" roughness={0.95} />
                 </mesh>
-                {/* Head - Reduced to 1/4 original size */}
-                <mesh position={[0, 1.25, 0]} rotation={[0, 0, Math.PI / 2]}>
-                    <boxGeometry args={[0.45, 0.18, 0.18]} />
-                    <meshStandardMaterial color="#2a2a2a" metalness={0.9} roughness={0.2} />
+
+                {/* MESH B: Shaft - Wood/Fiberglass (Top 60% of handle) */}
+                <mesh position={[0, 0.36, 0]}>
+                    <cylinderGeometry args={[0.04, 0.045, 0.72, 20]} />
+                    <meshStandardMaterial color="#D4AA6D" roughness={0.5} />
                 </mesh>
+
+                {/* MESH C: Head Center - Horizontal Cylindrical Hub */}
+                <mesh position={[0, 0.72, 0]} rotation={[0, 0, Math.PI / 2]}>
+                    <cylinderGeometry args={[0.065, 0.065, 0.3, 20]} />
+                    <meshStandardMaterial color="#C8C8C8" metalness={1} roughness={0.2} />
+                </mesh>
+
+                {/* MESH D: Striking Face - Cylindrical Hammer Face (Front +Z) */}
+                <mesh position={[0, 0.72, 0.25]} rotation={[Math.PI / 2, 0, 0]}>
+                    <cylinderGeometry args={[0.08, 0.07, 0.35, 20]} />
+                    <meshStandardMaterial color="#D0D0D0" metalness={1} roughness={0.15} />
+                </mesh>
+
+                {/* Striking face flat end cap */}
+                <mesh position={[0, 0.72, 0.425]} rotation={[Math.PI / 2, 0, 0]}>
+                    <circleGeometry args={[0.08, 20]} />
+                    <meshStandardMaterial color="#E0E0E0" metalness={1} roughness={0.1} />
+                </mesh>
+
+                {/* MESH E: The Claw - Curved and Tapered (Back -Z) */}
+                <group position={[0, 0.72, -0.2]} rotation={[-0.4, 0, 0]}>
+                    {/* Main claw body - thicker at base */}
+                    <mesh position={[0, 0, 0]}>
+                        <boxGeometry args={[0.16, 0.15, 0.12]} />
+                        <meshStandardMaterial color="#C8C8C8" metalness={1} roughness={0.2} />
+                    </mesh>
+
+                    {/* Claw transition/neck */}
+                    <mesh position={[0, -0.09, 0]}>
+                        <boxGeometry args={[0.14, 0.08, 0.1]} />
+                        <meshStandardMaterial color="#C8C8C8" metalness={1} roughness={0.2} />
+                    </mesh>
+
+                    {/* Left prong - curved outward */}
+                    <mesh position={[-0.045, -0.16, 0]} rotation={[0.1, 0, 0.2]} scale={[1, 1.2, 0.7]}>
+                        <boxGeometry args={[0.045, 0.12, 0.06]} />
+                        <meshStandardMaterial color="#D0D0D0" metalness={1} roughness={0.15} />
+                    </mesh>
+
+                    {/* Right prong - curved outward */}
+                    <mesh position={[0.045, -0.16, 0]} rotation={[0.1, 0, -0.2]} scale={[1, 1.2, 0.7]}>
+                        <boxGeometry args={[0.045, 0.12, 0.06]} />
+                        <meshStandardMaterial color="#D0D0D0" metalness={1} roughness={0.15} />
+                    </mesh>
+
+                    {/* Claw tips - pointed ends */}
+                    <mesh position={[-0.045, -0.23, 0]} rotation={[0, 0, 0]} scale={[0.8, 0.6, 0.8]}>
+                        <coneGeometry args={[0.025, 0.04, 8]} />
+                        <meshStandardMaterial color="#E0E0E0" metalness={1} roughness={0.1} />
+                    </mesh>
+                    <mesh position={[0.045, -0.23, 0]} rotation={[0, 0, 0]} scale={[0.8, 0.6, 0.8]}>
+                        <coneGeometry args={[0.025, 0.04, 8]} />
+                        <meshStandardMaterial color="#E0E0E0" metalness={1} roughness={0.1} />
+                    </mesh>
+                </group>
             </group>
         </group>
     );
@@ -438,10 +494,10 @@ export default function PalletAssembly() {
     useEffect(() => { ScrollTrigger.refresh(); }, []);
     return (
         <div id="pallet-container" className="h-[1000vh] relative bg-zinc-950">
-            <div className="sticky top-0 h-screen w-full overflow-hidden">
-                <Canvas shadows camera={{ position: [6, 4, 6], fov: 40 }}>
+            <div className="sticky top-0 h-screen w-full overflow-hidden pointer-events-none">
+                <Canvas shadows camera={{ position: [6, 4, 6], fov: 60 }} className="pointer-events-auto">
                     <Suspense fallback={null}>
-                        <OrbitControls autoRotate={completed} makeDefault />
+                        <OrbitControls autoRotate={completed} makeDefault enableZoom={false} enablePan={false} />
                         <Scene setCompleted={setCompleted} />
                     </Suspense>
                 </Canvas>
