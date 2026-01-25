@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Force custom cursor on all elements */
+* {
+  cursor: none !important;
+}
+
 @layer base {
   * {
     margin: 0;

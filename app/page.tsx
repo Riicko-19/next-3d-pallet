@@ -15,17 +15,19 @@ const Scene = dynamic(
   { ssr: false }
 );
 
+// Animation variants for fade-up effects
 const fadeUpVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 50 },
   visible: { opacity: 1, y: 0 },
 };
+
 
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
+      staggerChildren: 0.15,
     },
   },
 };
@@ -96,7 +98,7 @@ export default function Home() {
                 className="text-center mb-16"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: false, amount: 0.3 }}
                 transition={{ duration: 0.6 }}
               >
                 <h2 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight mb-4 text-zinc-900 dark:text-white">
@@ -112,7 +114,7 @@ export default function Home() {
                 variants={containerVariants}
                 initial="hidden"
                 whileInView="visible"
-                viewport={{ once: true }}
+                viewport={{ once: false, amount: 0.3 }}
               >
                 {/* Card 1: Fire-Brigade Service */}
                 <motion.div
@@ -212,7 +214,7 @@ export default function Home() {
                 className="text-center mb-16"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: false, amount: 0.3 }}
               >
                 <h2 className="text-5xl md:text-6xl font-black tracking-tight mb-4 text-zinc-900 dark:text-white">
                   By The Numbers
@@ -233,7 +235,7 @@ export default function Home() {
                     key={i}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: false, amount: 0.3 }}
                     transition={{ delay: i * 0.1 }}
                   >
                     <SpotlightCard className="p-8 text-center h-full">
@@ -253,7 +255,7 @@ export default function Home() {
               className="max-w-7xl mx-auto"
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false, amount: 0.3 }}
             >
               <SpotlightCard className="p-12 md:p-20 text-center">
                 <h2 className="text-5xl md:text-7xl font-black tracking-tight mb-6 text-zinc-900 dark:text-white">

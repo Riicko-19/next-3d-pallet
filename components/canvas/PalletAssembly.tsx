@@ -69,8 +69,9 @@ function Plank({ clusterIndex, targetPos, targetRotation, size, texture }: any) 
             <boxGeometry args={size} />
             <meshStandardMaterial
                 map={texture}
-                color="#8c6a4a"
-                roughness={0.9}
+                color="#d8c6b0"
+                roughness={1.0}
+                metalness={0}
             />
         </mesh>
     );

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "./providers";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { HammerCursor } from "@/components/ui/HammerCursor";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,7 @@ export default function RootLayout({
           enableSystem={true}
           disableTransitionOnChange
         >
+          <HammerCursor />
           {children}
           <ThemeToggle />
         </ThemeProvider>
