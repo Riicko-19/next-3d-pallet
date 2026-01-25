@@ -67,7 +67,11 @@ function Plank({ clusterIndex, targetPos, targetRotation, size, texture }: any) 
     return (
         <mesh ref={meshRef} castShadow receiveShadow>
             <boxGeometry args={size} />
-            <meshStandardMaterial map={texture} roughness={0.6} />
+            <meshStandardMaterial
+                map={texture}
+                color="#8c6a4a"
+                roughness={0.9}
+            />
         </mesh>
     );
 }
@@ -410,6 +414,38 @@ function Stamp() {
     );
 }
 
+// --- MOVING BACKGROUND (Wireframe Tunnel) ---
+function MovingBackground() {
+    const cylinderRef = useRef<THREE.Mesh>(null);
+
+    useGSAP(() => {
+        if (!cylinderRef.current) return;
+
+        // Rotate the cylinder background as user scrolls
+        gsap.to(cylinderRef.current.rotation, {
+            y: Math.PI,
+            scrollTrigger: {
+                trigger: '#pallet-container',
+                start: '0% top',
+                end: '100% top',
+                scrub: 3
+            },
+            ease: "none"
+        });
+    }, []);
+
+    return (
+        <mesh ref={cylinderRef} position={[0, 0, 0]}>
+            <cylinderGeometry args={[30, 30, 100, 32, 1, true]} />
+            <meshBasicMaterial
+                color="#222222"
+                wireframe={true}
+                side={THREE.BackSide}
+            />
+        </mesh>
+    );
+}
+
 // --- MAIN SCENE ---
 function Scene({ setCompleted }: { setCompleted: (v: boolean) => void }) {
     const texture = useTexture('https://threejs.org/examples/textures/hardwood2_diffuse.jpg');
@@ -427,7 +463,13 @@ function Scene({ setCompleted }: { setCompleted: (v: boolean) => void }) {
     }, []);
 
     const planks = useMemo(() => {
-        const p = [];
+        const p: Array<{
+            id: string;
+            clusterIndex: number;
+            size: [number, number, number];
+            targetPos: [number, number, number];
+            targetRotation: [number, number, number];
+        }> = [];
         const deckLength = 3.0;
         const thickness = 0.15;
         const width = 0.3;
@@ -471,10 +513,30 @@ function Scene({ setCompleted }: { setCompleted: (v: boolean) => void }) {
 
     return (
         <>
-            <Environment preset="city" />
-            <ambientLight intensity={1.0} />
-            <SpotLight position={[10, 15, 10]} angle={0.3} penumbra={1} intensity={2} castShadow />
-            <ContactShadows position={[0, -0.6, 0]} opacity={0.5} blur={2} />
+            {/* Wireframe tunnel background - HIDDEN per user request */}
+            {/* <MovingBackground /> */}
+
+            {/* Lower ambient light for dramatic shadows */}
+            <ambientLight intensity={0.3} />
+
+            {/* 3x3 Grid of Warm Industrial Overhead Lights */}
+            {[-10, 0, 10].map((x) =>
+                [-10, 0, 10].map((z) => (
+                    <SpotLight
+                        key={`light-${x}-${z}`}
+                        position={[x, 20, z]}
+                        angle={0.4}
+                        penumbra={1}
+                        intensity={3}
+                        color="#ff9f43"
+                        castShadow
+                        shadow-mapSize={[512, 512]}
+                    />
+                ))
+            )}
+
+            <Environment preset="warehouse" />
+            <ContactShadows position={[0, -0.6, 0]} opacity={0.4} blur={2.5} />
 
             {logs.map((l, i) => <Log key={i} position={l.pos as any} index={i} isHero={l.isHero} />)}
             {planks.map((p) => <Plank key={p.id} {...p} texture={texture} />)}
@@ -488,6 +550,9 @@ function Scene({ setCompleted }: { setCompleted: (v: boolean) => void }) {
         </>
     );
 }
+
+// Export Scene component for direct use in page.tsx
+export { Scene };
 
 export default function PalletAssembly() {
     const [completed, setCompleted] = useState(false);

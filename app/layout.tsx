@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "./providers";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "The Perfect Pallet",
-  description: "Precision Milled. Sustainably Sourced.",
+  title: "Ambica Patterns | Move The Impossible",
+  description: "India's First EPAL Certified Pallet Manufacturer. Fire-Brigade Service Model.",
 };
 
 export default function RootLayout({
@@ -23,12 +25,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        suppressHydrationWarning={true}
       >
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={true}
+          disableTransitionOnChange
+        >
+          {children}
+          <ThemeToggle />
+        </ThemeProvider>
       </body>
     </html>
   );

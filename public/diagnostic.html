@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Diagnostic</title>
+    <style>
+        body {
+            background: #050505;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+        }
+
+        .test-box {
+            margin: 2rem 0;
+            padding: 2rem;
+            border: 2px solid #f59e0b;
+            border-radius: 1rem;
+        }
+
+        .glass-test {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .gradient-test {
+            background: linear-gradient(to right, #f59e0b, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 3rem;
+            font-weight: 900;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>CSS Diagnostic Page</h1>
+
+    <div class="test-box">
+        <h2>If you can see this box with an amber border, basic CSS is working ✅</h2>
+    </div>
+
+    <div class="glass-test">
+        <h2>If this box has a blur effect, glassmorphism is supported ✅</h2>
+        <p>This should have a semi-transparent blurred background</p>
+    </div>
+
+    <h2 class="gradient-test">Gradient Text Test</h2>
+    <p>The text above should have an amber gradient</p>
+
+    <div style="margin-top: 3rem; padding: 2rem; background: rgba(255,0,0,0.2); border: 2px solid red;">
+        <h3>Instructions:</h3>
+        <ol>
+            <li>If you see the amber border box → Basic CSS works</li>
+            <li>If the glass box is blurry → Browser supports backdrop-filter</li>
+            <li>If "Gradient Text Test" has orange gradient → Gradients work</li>
+        </ol>
+        <p><strong>If all 3 work here but not on localhost:3000, the problem is with Tailwind CSS compilation.</strong>
+        </p>
+    </div>
+
+    <div style="margin-top: 2rem; padding: 2rem; background: rgba(0,255,0,0.2); border: 2px solid lime;">
+        <h3>Next Step:</h3>
+        <p>Open browser DevTools (F12) → Go to localhost:3000 → Check Console tab</p>
+        <p>Look for errors related to CSS or Tailwind</p>
+        <p>Also check the Network tab to see if globals.css is loading</p>
+    </div>
+</body>
+
+</html>

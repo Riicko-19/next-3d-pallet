@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambia Patterns - Move The Impossible</title>
+    <meta name="description" content="India's First EPAL Certified Pallet Manufacturer. Operating on a Fire-Brigade Service Model.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: #050505;
+            overflow-x: hidden;
+        }
+
+        .glow-text {
+            position: relative;
+        }
+
+        .glow-text::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120%;
+            height: 120%;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
+            filter: blur(60px);
+            z-index: -1;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .gradient-border {
+            position: relative;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), transparent, rgba(245, 158, 11, 0.1));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .gradient-border:hover::before {
+            opacity: 1;
+        }
+
+        .card-glow {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-glow:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px rgba(245, 158, 11, 0.15);
+        }
+
+        .browser-mockup {
+            border-radius: 12px;
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .browser-header {
+            height: 40px;
+            background: rgba(30, 30, 30, 0.9);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 8px;
+        }
+
+        .browser-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .forest-gradient {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(245, 158, 11, 0.2) 100%);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="text-white antialiased">
+    
+    <!-- Floating Navigation -->
+    <nav class="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-full backdrop-blur-md bg-white/5 border border-white/10 shadow-2xl">
+        <div class="flex items-center gap-8">
+            <a href="#" class="font-bold text-lg tracking-tight">Ambia Patterns</a>
+            <div class="hidden md:flex items-center gap-6 text-sm">
+                <a href="#services" class="hover:text-amber-500 transition-colors">Services</a>
+                <a href="#capabilities" class="hover:text-amber-500 transition-colors">Capabilities</a>
+                <a href="#sustainability" class="hover:text-amber-500 transition-colors">Sustainability</a>
+                <a href="#contact" class="px-4 py-2 rounded-full bg-amber-500 text-black font-medium hover:bg-amber-400 transition-all">Get Quote</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex flex-col items-center justify-center px-6 pt-32 pb-20">
+        <div class="max-w-5xl mx-auto text-center space-y-8">
+            <div class="glow-text">
+                <h1 class="text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-none mb-6">
+                    Move The<br>
+                    <span class="gradient-text">Impossible</span>
+                </h1>
+            </div>
+            <p class="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+                India's First EPAL Certified Pallet Manufacturer.<br>
+                Operating on a Fire-Brigade Service Model.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
+                <a href="#contact" class="px-8 py-4 rounded-full bg-amber-500 text-black font-semibold text-lg hover:bg-amber-400 transition-all hover:scale-105">
+                    Start Your Project
+                </a>
+                <a href="#capabilities" class="px-8 py-4 rounded-full border border-white/20 font-semibold text-lg hover:border-amber-500/50 transition-all">
+                    Explore Capabilities
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard/Production Line Image Section -->
+    <section class="px-6 pb-32">
+        <div class="max-w-7xl mx-auto">
+            <div class="browser-mockup float-animation">
+                <div class="browser-header">
+                    <div class="browser-dot bg-red-500"></div>
+                    <div class="browser-dot bg-yellow-500"></div>
+                    <div class="browser-dot bg-green-500"></div>
+                </div>
+                <div class="relative aspect-video bg-gradient-to-br from-gray-900 to-black overflow-hidden">
+                    <!-- Placeholder for production line image -->
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="text-center space-y-4 p-12">
+                            <!-- Assembly Line Visualization -->
+                            <div class="grid grid-cols-4 gap-4 mb-8">
+                                <div class="h-24 bg-gradient-to-br from-amber-500/20 to-amber-600/10 rounded-lg border border-amber-500/30 flex items-center justify-center backdrop-blur-sm">
+                                    <svg class="w-12 h-12 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                    </svg>
+                                </div>
+                                <div class="h-24 bg-gradient-to-br from-amber-500/20 to-amber-600/10 rounded-lg border border-amber-500/30 flex items-center justify-center backdrop-blur-sm">
+                                    <svg class="w-12 h-12 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                    </svg>
+                                </div>
+                                <div class="h-24 bg-gradient-to-br from-amber-500/20 to-amber-600/10 rounded-lg border border-amber-500/30 flex items-center justify-center backdrop-blur-sm">
+                                    <svg class="w-12 h-12 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                </div>
+                                <div class="h-24 bg-gradient-to-br from-amber-500/20 to-amber-600/10 rounded-lg border border-amber-500/30 flex items-center justify-center backdrop-blur-sm">
+                                    <svg class="w-12 h-12 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <h3 class="text-3xl font-bold">Automated Assembly Line</h3>
+                            <p class="text-gray-400 text-lg">Precision. Speed. Reliability.</p>
+                            <div class="flex gap-4 justify-center pt-4">
+                                <div class="px-4 py-2 rounded-full bg-green-500/10 border border-green-500/30 text-green-400 text-sm font-medium">
+                                    Online
+                                </div>
+                                <div class="px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm font-medium">
+                                    85% Solar Powered
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bento Grid Section -->
+    <section id="capabilities" class="px-6 pb-32">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl md:text-6xl font-black tracking-tight mb-4">Built Different</h2>
+                <p class="text-xl text-gray-400">Industrial-grade capabilities that set us apart</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1: Fire-Brigade Service (Large - Spans 2 columns) -->
+                <div class="lg:col-span-2 gradient-border rounded-3xl p-8 card-glow backdrop-blur-md">
+                    <div class="space-y-6">
+                        <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-3xl font-bold mb-3">Fire-Brigade Service</h3>
+                            <p class="text-gray-400 text-lg leading-relaxed">
+                                We never say no to a deadline. With 3 months of raw material stock on hand, we deliver when others can't. Emergency orders are our specialty.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-3 pt-4">
+                            <span class="px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm font-medium">24/7 Available</span>
+                            <span class="px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm font-medium">3-Month Stock</span>
+                            <span class="px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm font-medium">Rapid Deployment</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Cultivated Forest (Tall - Spans 2 rows) -->
+                <div class="lg:row-span-2 gradient-border rounded-3xl p-8 card-glow backdrop-blur-md forest-gradient">
+                    <div class="space-y-6 h-full flex flex-col">
+                        <div class="w-16 h-16 rounded-2xl bg-green-500/10 border border-green-500/30 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-3xl font-bold mb-3">Cultivated Forest</h3>
+                            <p class="text-gray-400 text-lg leading-relaxed mb-6">
+                                100% Sustainable PEFC Wood sourced from responsibly managed forests.
+                            </p>
+                            <!-- Visual representation -->
+                            <div class="space-y-3">
+                                <div class="h-2 bg-green-500/20 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-green-500 to-amber-500 w-full"></div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 pt-4">
+                                    <div class="text-center p-4 rounded-xl bg-white/5 border border-white/10">
+                                        <div class="text-2xl font-bold text-green-400">100%</div>
+                                        <div class="text-xs text-gray-400 mt-1">PEFC Certified</div>
+                                    </div>
+                                    <div class="text-center p-4 rounded-xl bg-white/5 border border-white/10">
+                                        <div class="text-2xl font-bold text-amber-400">Sustainable</div>
+                                        <div class="text-xs text-gray-400 mt-1">Renewable Source</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: EPAL Certified (Small) -->
+                <div class="gradient-border rounded-3xl p-8 card-glow backdrop-blur-md">
+                    <div class="space-y-6">
+                        <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold mb-2">EPAL Certified</h3>
+                            <p class="text-gray-400">India's first EPAL certified manufacturer</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Solar Powered (Small) -->
+                <div class="gradient-border rounded-3xl p-8 card-glow backdrop-blur-md">
+                    <div class="space-y-6">
+                        <div class="w-16 h-16 rounded-2xl bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold mb-2">Solar Powered</h3>
+                            <p class="text-gray-400">85% energy from renewable sources</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonial Section -->
+    <section class="px-6 pb-32">
+        <div class="max-w-5xl mx-auto">
+            <div class="gradient-border rounded-3xl p-12 md:p-16 text-center backdrop-blur-md">
+                <svg class="w-16 h-16 text-amber-500 mx-auto mb-8 opacity-50" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                </svg>
+                <blockquote class="text-3xl md:text-4xl font-bold leading-tight mb-8 tracking-tight">
+                    Our business is a replication of a<br class="hidden md:block">
+                    <span class="gradient-text">Fire-Brigade Service Model.</span>
+                </blockquote>
+                <div class="text-gray-400 text-lg">
+                    <div class="font-semibold text-white">Founder</div>
+                    <div>Ambia Patterns</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer CTA -->
+    <footer id="contact" class="px-6 pb-12">
+        <div class="max-w-7xl mx-auto">
+            <div class="gradient-border rounded-[3rem] p-12 md:p-20 text-center card-glow backdrop-blur-md">
+                <h2 class="text-5xl md:text-7xl font-black tracking-tight mb-6">
+                    Ready to Move<br>
+                    <span class="gradient-text">The Impossible?</span>
+                </h2>
+                <p class="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
+                    Get a quote for your next project. We're ready 24/7 to handle your most demanding deadlines.
+                </p>
+                <a href="mailto:info@ambiapatterns.com" class="inline-block px-12 py-5 rounded-full bg-amber-500 text-black font-bold text-xl hover:bg-amber-400 transition-all hover:scale-105 shadow-2xl">
+                    Get a Quote →
+                </a>
+                
+                <!-- Footer Links -->
+                <div class="mt-16 pt-16 border-t border-white/10">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-left mb-12">
+                        <div>
+                            <h4 class="font-bold text-lg mb-4">Company</h4>
+                            <ul class="space-y-2 text-gray-400">
+                                <li><a href="#" class="hover:text-amber-500 transition-colors">About Us</a></li>
+                                <li><a href="#" class="hover:text-amber-500 transition-colors">Our Story</a></li>
+                                <li><a href="#" class="hover:text-amber-500 transition-colors">Careers</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg mb-4">Products</h4>
+                            <ul class="space-y-2 text-gray-400">
+                                <li><a href="#" class="hover:text-amber-500 transition-colors">EPAL Pallets</a></li>
+                                <li><a href="#" class="hover:text-amber-500 transition-colors">Custom Solutions</a></li>
+                                <li><a href="#" class="hover:text-amber-500 transition-colors">Bulk Orders</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg mb-4">Resources</h4>
+                            <ul class="space-y-2 text-gray-400">
+                                <li><a href="#" class="hover:text-amber-500 transition-colors">Documentation</a></li>
+                                <li><a href="#" class="hover:text-amber-500 transition-colors">Case Studies</a></li>
+                                <li><a href="#" class="hover:text-amber-500 transition-colors">Certifications</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg mb-4">Contact</h4>
+                            <ul class="space-y-2 text-gray-400">
+                                <li><a href="#" class="hover:text-amber-500 transition-colors">Support</a></li>
+                                <li><a href="#" class="hover:text-amber-500 transition-colors">Sales</a></li>
+                                <li><a href="#" class="hover:text-amber-500 transition-colors">Locations</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm">
+                        <p>© 2026 Ambia Patterns (formerly Jay Wood Industry). All rights reserved.</p>
+                        <div class="flex gap-6 mt-4 md:mt-0">
+                            <a href="#" class="hover:text-amber-500 transition-colors">Privacy Policy</a>
+                            <a href="#" class="hover:text-amber-500 transition-colors">Terms of Service</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
