@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useMemo, Suspense, useState, useEffect } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment, SpotLight, useTexture, ContactShadows, OrbitControls, Text, MeshReflectorMaterial, Sparkles } from '@react-three/drei';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
@@ -447,6 +447,47 @@ function MovingBackground() {
     );
 }
 
+// --- CAMERA RIG (Continuous Orbital Camera) ---
+function CameraRig() {
+    const [scrollProgress, setScrollProgress] = useState(0);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const container = document.getElementById('pallet-container');
+            if (!container) return;
+
+            const scrollY = window.scrollY;
+            const maxScroll = container.scrollHeight - window.innerHeight;
+            const progress = Math.min(Math.max(scrollY / maxScroll, 0), 1);
+            setScrollProgress(progress);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        handleScroll();
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    useFrame((state) => {
+        const angle = scrollProgress * Math.PI * 2; // Full 360 degree rotation
+        const radius = 14;
+
+        // Calculate target position on circular orbit
+        const targetX = Math.sin(angle) * radius;
+        const targetZ = Math.cos(angle) * radius;
+        const targetY = 5; // Steady elevated angle
+
+        // Smoothly interpolate current camera position to target (cinematic damping)
+        state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, targetX, 0.05);
+        state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, targetY, 0.05);
+        state.camera.position.z = THREE.MathUtils.lerp(state.camera.position.z, targetZ, 0.05);
+
+        // Always look at pallet center
+        state.camera.lookAt(0, 0, 0);
+    });
+
+    return null;
+}
+
 // --- MAIN SCENE ---
 function Scene({ setCompleted }: { setCompleted: (v: boolean) => void }) {
     const texture = useTexture('https://threejs.org/examples/textures/hardwood2_diffuse.jpg');
@@ -514,45 +555,25 @@ function Scene({ setCompleted }: { setCompleted: (v: boolean) => void }) {
 
     return (
         <>
-            {/* DARK WAREHOUSE ATMOSPHERE */}
+            {/* DARK WAREHOUSE ATMOSPHERE - OPTIMIZED */}
 
-            {/* Fog for atmospheric depth */}
-            <fog attach="fog" args={['#050505', 5, 20]} />
-
-            {/* Reflective concrete floor */}
+            {/* Simple dark floor - much faster than reflective material */}
             <mesh rotation-x={-Math.PI / 2} position={[0, -2, 0]} receiveShadow>
                 <planeGeometry args={[500, 500]} />
-                <MeshReflectorMaterial
-                    blur={[400, 100]}
-                    resolution={512}
-                    mixBlur={1}
-                    mixStrength={30}
-                    roughness={0.8}
-                    depthScale={1}
-                    minDepthThreshold={0.4}
-                    maxDepthThreshold={1.2}
-                    color="#1a1a1a"
-                    metalness={0.3}
+                <meshStandardMaterial
+                    color="#0a0a0a"
+                    roughness={0.9}
+                    metalness={0.1}
                 />
             </mesh>
 
-            {/* Floating dust particles */}
-            <Sparkles
-                count={30}
-                scale={8}
-                size={3}
-                speed={0.3}
-                opacity={0.4}
-                color="#ffffff"
-            />
+            {/* OPTIMIZED LIGHTING */}
 
-            {/* UPGRADED LIGHTING */}
+            {/* Basic environment */}
+            <Environment preset="city" environmentIntensity={0.3} />
 
-            {/* Subtle environment for realistic reflections */}
-            <Environment preset="city" environmentIntensity={0.5} />
-
-            {/* Lower ambient for dramatic shadows */}
-            <ambientLight intensity={0.2} />
+            {/* Ambient light */}
+            <ambientLight intensity={0.3} />
 
             {/* Key light - hard shadow from top-right */}
             <SpotLight
@@ -603,8 +624,8 @@ function Scene({ setCompleted }: { setCompleted: (v: boolean) => void }) {
     );
 }
 
-// Export Scene component for direct use in page.tsx
-export { Scene };
+// Export Scene and CameraRig components for direct use in page.tsx
+export { Scene, CameraRig };
 
 export default function PalletAssembly() {
     const [completed, setCompleted] = useState(false);
@@ -612,9 +633,9 @@ export default function PalletAssembly() {
     return (
         <div id="pallet-container" className="h-[1000vh] relative bg-zinc-950">
             <div className="sticky top-0 h-screen w-full overflow-hidden pointer-events-none">
-                <Canvas shadows camera={{ position: [6, 4, 6], fov: 60 }} className="pointer-events-auto">
+                <Canvas shadows camera={{ position: [0, 5, 14], fov: 60 }} className="pointer-events-auto">
                     <Suspense fallback={null}>
-                        <OrbitControls autoRotate={completed} makeDefault enableZoom={false} enablePan={false} />
+                        <CameraRig />
                         <Scene setCompleted={setCompleted} />
                     </Suspense>
                 </Canvas>

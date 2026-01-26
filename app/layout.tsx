@@ -4,7 +4,6 @@ import "./globals.css";
 import { ThemeProvider } from "./providers";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { HammerCursor } from "@/components/ui/HammerCursor";
-import { SmoothScroll } from "@/components/ui/SmoothScroll";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,11 +36,9 @@ export default function RootLayout({
           enableSystem={true}
           disableTransitionOnChange
         >
-          <SmoothScroll>
-            <HammerCursor />
-            {children}
-            <ThemeToggle />
-          </SmoothScroll>
+          <HammerCursor />
+          {children}
+          <ThemeToggle />
         </ThemeProvider>
       </body>
     </html>

@@ -4,16 +4,21 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Zap, TreePine, Wifi } from 'lucide-react';
 import { useRef, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
 import dynamic from 'next/dynamic';
 import { SpotlightCard } from '@/components/ui/SpotlightCard';
 import { FloatingNav } from '@/components/layout/FloatingNav';
 import { GradualSpacing } from '@/components/ui/gradual-spacing';
-import { GridBackground } from '@/components/ui/GridBackground';
+import { Squares } from '@/components/ui/Squares';
 
 // Dynamically import the 3D scene (not the wrapper component)
 const Scene = dynamic(
   () => import('@/components/canvas/PalletAssembly').then(mod => ({ default: mod.Scene })),
+  { ssr: false }
+);
+
+// Dynamically import CameraRig
+const CameraRig = dynamic(
+  () => import('@/components/canvas/PalletAssembly').then(mod => ({ default: mod.CameraRig })),
   { ssr: false }
 );
 
@@ -49,9 +54,20 @@ export default function Home() {
 
   return (
     <>
-      {/* LAYER 1: Fixed 3D Canvas Background (z-0) */}
+      {/* LAYER 0: Animated Grid Background */}
+      <div className="fixed inset-0 z-0 bg-[#050505]">
+        <Squares
+          direction="diagonal"
+          speed={0.2}
+          squareSize={50}
+          borderColor="#262626"
+          hoverFillColor="#f59e0b10"
+        />
+      </div>
+
+      {/* LAYER 1: Fixed 3D Canvas Background (z-10) */}
       <motion.div
-        className="fixed inset-0 z-0 bg-[#050505]"
+        className="fixed inset-0 z-10 bg-transparent"
         style={{ opacity: backgroundOpacity }}
       >
         <Canvas
@@ -59,10 +75,10 @@ export default function Home() {
           camera={{ position: [6, 4, 6], fov: 60 }}
           dpr={[1, 2]}
           performance={{ min: 0.5 }}
-          gl={{ antialias: true, alpha: false }}
+          gl={{ antialias: true, alpha: true }}
         >
           <Suspense fallback={null}>
-            <OrbitControls makeDefault enableZoom={false} enablePan={false} />
+            <CameraRig />
             {/* @ts-ignore */}
             <Scene setCompleted={() => { }} />
           </Suspense>
@@ -103,9 +119,6 @@ export default function Home() {
 
         {/* SECTION B: Scroll Spacer (1000vh for 3D Animation) - CRITICAL: Must have #pallet-container ID */}
         <div id="pallet-container" className="h-[1000vh] relative" />
-
-        {/* Grid Background Layer */}
-        <GridBackground />
 
         {/* SECTION C: Content Section (Bento Grid) */}
         <div className="relative bg-white dark:bg-[#050505]">
