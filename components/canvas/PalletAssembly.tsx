@@ -2,7 +2,7 @@
 
 import { useRef, useMemo, Suspense, useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Environment, SpotLight, useTexture, ContactShadows, OrbitControls, Text } from '@react-three/drei';
+import { Environment, SpotLight, useTexture, ContactShadows, OrbitControls, Text, MeshReflectorMaterial, Sparkles } from '@react-three/drei';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -69,8 +69,8 @@ function Plank({ clusterIndex, targetPos, targetRotation, size, texture }: any) 
             <boxGeometry args={size} />
             <meshStandardMaterial
                 map={texture}
-                color="#d8c6b0"
-                roughness={1.0}
+                color="#daa520"
+                roughness={0.9}
                 metalness={0}
             />
         </mesh>
@@ -514,11 +514,63 @@ function Scene({ setCompleted }: { setCompleted: (v: boolean) => void }) {
 
     return (
         <>
-            {/* Wireframe tunnel background - HIDDEN per user request */}
-            {/* <MovingBackground /> */}
+            {/* DARK WAREHOUSE ATMOSPHERE */}
 
-            {/* Lower ambient light for dramatic shadows */}
-            <ambientLight intensity={0.3} />
+            {/* Fog for atmospheric depth */}
+            <fog attach="fog" args={['#050505', 5, 20]} />
+
+            {/* Reflective concrete floor */}
+            <mesh rotation-x={-Math.PI / 2} position={[0, -2, 0]} receiveShadow>
+                <planeGeometry args={[500, 500]} />
+                <MeshReflectorMaterial
+                    blur={[400, 100]}
+                    resolution={512}
+                    mixBlur={1}
+                    mixStrength={30}
+                    roughness={0.8}
+                    depthScale={1}
+                    minDepthThreshold={0.4}
+                    maxDepthThreshold={1.2}
+                    color="#1a1a1a"
+                    metalness={0.3}
+                />
+            </mesh>
+
+            {/* Floating dust particles */}
+            <Sparkles
+                count={30}
+                scale={8}
+                size={3}
+                speed={0.3}
+                opacity={0.4}
+                color="#ffffff"
+            />
+
+            {/* UPGRADED LIGHTING */}
+
+            {/* Subtle environment for realistic reflections */}
+            <Environment preset="city" environmentIntensity={0.5} />
+
+            {/* Lower ambient for dramatic shadows */}
+            <ambientLight intensity={0.2} />
+
+            {/* Key light - hard shadow from top-right */}
+            <SpotLight
+                position={[10, 10, 10]}
+                angle={0.5}
+                penumbra={1}
+                intensity={4}
+                color="#ffffff"
+                castShadow
+                shadow-mapSize={[1024, 1024]}
+            />
+
+            {/* Rim light - amber accent from behind */}
+            <pointLight
+                position={[-5, 2, -10]}
+                intensity={3}
+                color="#f59e0b"
+            />
 
             {/* 3x3 Grid of Warm Industrial Overhead Lights */}
             {[-10, 0, 10].map((x) =>
@@ -528,7 +580,7 @@ function Scene({ setCompleted }: { setCompleted: (v: boolean) => void }) {
                         position={[x, 20, z]}
                         angle={0.4}
                         penumbra={1}
-                        intensity={3}
+                        intensity={2}
                         color="#ff9f43"
                         castShadow
                         shadow-mapSize={[512, 512]}
@@ -536,8 +588,7 @@ function Scene({ setCompleted }: { setCompleted: (v: boolean) => void }) {
                 ))
             )}
 
-            <Environment preset="warehouse" />
-            <ContactShadows position={[0, -0.6, 0]} opacity={0.4} blur={2.5} />
+            <ContactShadows position={[0, -0.6, 0]} opacity={0.6} blur={2.5} />
 
             {logs.map((l, i) => <Log key={i} position={l.pos as any} index={i} isHero={l.isHero} />)}
             {planks.map((p) => <Plank key={p.id} {...p} texture={texture} />)}

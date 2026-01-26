@@ -8,6 +8,8 @@ import { OrbitControls } from '@react-three/drei';
 import dynamic from 'next/dynamic';
 import { SpotlightCard } from '@/components/ui/SpotlightCard';
 import { FloatingNav } from '@/components/layout/FloatingNav';
+import { GradualSpacing } from '@/components/ui/gradual-spacing';
+import { GridBackground } from '@/components/ui/GridBackground';
 
 // Dynamically import the 3D scene (not the wrapper component)
 const Scene = dynamic(
@@ -35,25 +37,37 @@ const containerVariants = {
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Track scroll progress for title fade
+  // Track scroll progress for cross-fade effect
   const { scrollY } = useScroll();
 
-  // Title fades from 1 to 0 as user scrolls from 0 to 500px
-  const titleOpacity = useTransform(scrollY, [0, 500], [1, 0]);
-  const titleScale = useTransform(scrollY, [0, 500], [1, 0.95]);
+  // Title fades out faster (0-200px -> 1 to 0)
+  const titleOpacity = useTransform(scrollY, [0, 200], [1, 0]);
+  const titleScale = useTransform(scrollY, [0, 200], [1, 0.95]);
+
+  // 3D background fades in slower (0-300px -> 0 to 1)
+  const backgroundOpacity = useTransform(scrollY, [0, 300], [0, 1]);
 
   return (
     <>
       {/* LAYER 1: Fixed 3D Canvas Background (z-0) */}
-      <div className="fixed inset-0 z-0 bg-zinc-100 dark:bg-zinc-950">
-        <Canvas shadows camera={{ position: [6, 4, 6], fov: 60 }}>
+      <motion.div
+        className="fixed inset-0 z-0 bg-[#050505]"
+        style={{ opacity: backgroundOpacity }}
+      >
+        <Canvas
+          shadows
+          camera={{ position: [6, 4, 6], fov: 60 }}
+          dpr={[1, 2]}
+          performance={{ min: 0.5 }}
+          gl={{ antialias: true, alpha: false }}
+        >
           <Suspense fallback={null}>
             <OrbitControls makeDefault enableZoom={false} enablePan={false} />
             {/* @ts-ignore */}
             <Scene setCompleted={() => { }} />
           </Suspense>
         </Canvas>
-      </div>
+      </motion.div>
 
       {/* LAYER 2: Scrollable Content (z-10) */}
       <div ref={containerRef} className="relative z-10">
@@ -67,10 +81,20 @@ export default function Home() {
           }}
         >
           <div className="text-center px-6">
-            <h1 className="text-7xl md:text-8xl lg:text-[12rem] font-black tracking-tighter leading-none">
-              <span className="block text-zinc-900 dark:text-white">MOVE THE</span>
-              <span className="block gradient-text">IMPOSSIBLE</span>
-            </h1>
+            <div className="space-y-4">
+              <GradualSpacing
+                text="MOVE THE"
+                className="text-7xl md:text-8xl lg:text-[12rem] font-black tracking-tighter leading-none text-zinc-900 dark:text-white"
+                duration={0.5}
+                delayMultiple={0.05}
+              />
+              <GradualSpacing
+                text="IMPOSSIBLE"
+                className="text-7xl md:text-8xl lg:text-[12rem] font-black tracking-tighter leading-none gradient-text"
+                duration={0.5}
+                delayMultiple={0.05}
+              />
+            </div>
             <p className="mt-8 text-xl md:text-2xl text-zinc-600 dark:text-gray-400 max-w-3xl mx-auto">
               India&apos;s First EPAL Certified Pallet Manufacturer
             </p>
@@ -78,9 +102,10 @@ export default function Home() {
         </motion.section>
 
         {/* SECTION B: Scroll Spacer (1000vh for 3D Animation) - CRITICAL: Must have #pallet-container ID */}
-        <div id="pallet-container" className="relative" style={{ height: '1000vh' }}>
-          {/* This empty space allows the 3D animation to play via ScrollTrigger */}
-        </div>
+        <div id="pallet-container" className="h-[1000vh] relative" />
+
+        {/* Grid Background Layer */}
+        <GridBackground />
 
         {/* SECTION C: Content Section (Bento Grid) */}
         <div className="relative bg-white dark:bg-[#050505]">
